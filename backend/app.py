@@ -35,6 +35,35 @@ def add_transaction():
 
     return jsonify({'message': 'Transaction added seccessfully'}), 201
 
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    category = request.args.get('category')
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if category:
+        cursor.execute('''
+            SELECT * FROM transactions WHERE category = ?
+        ''', (category,))
+    else:
+        cursor.execute('SELECT * FROM transactions')
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    transactions = []
+    for row in rows:
+        transactions.append({
+            'id': row['id'],
+            'amount': row['amount'],
+            'category': row['category'],
+            'date': row['date'],
+            'note': row['note']
+        })
+
+    return jsonify(transactions), 200
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
