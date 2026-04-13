@@ -17,27 +17,17 @@ function TransactionForm({ onTransactionAdded }) {
 		}
 
 		try {
-			const response = await fetch("http://127.0.0.1:5000/transactions", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					amount: parseFloat(amount),
-					category,
-					date,
-					note,
-				}),
+			await onTransactionAdded({
+				amount: parseFloat(amount),
+				category,
+				date,
+				note,
 			});
-
-			if (!response.ok) {
-				setError("Failed to add transaction");
-				return;
-			}
 
 			setAmount("");
 			setCategory("other");
 			setDate("");
 			setNote("");
-			onTransactionAdded();
 		} catch (err) {
 			setError("Could not connect to server");
 		}
