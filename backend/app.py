@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from database import init_db, get_connection
+from routes.summary import summary_bp
 
 app = Flask(__name__)
 CORS(app)
+
+app.register_blueprint(summary_bp)
 
 @app.route('/')
 @app.route('/home')
@@ -13,16 +16,11 @@ def index():
 @app.route('/transactions', methods=['POST'])
 def add_transaction():
     data = request.get_json()
-    print('Received data:', data)
-
     amount = data.get('amount')
     category = data.get('category')
     date = data.get('date')
     note = data.get('note', '')
 
-    print('amount:', amount, type(amount))
-    print('category:', category, type(category))
-    print('date:', date, type(date))
     if amount is None or not category or not date:
         return jsonify({'error': 'ammount, category, and date are required'}), 400
     
