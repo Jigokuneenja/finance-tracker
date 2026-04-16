@@ -1,9 +1,11 @@
 from flask import Blueprint, jsonify
 from database import get_connection
+from middleware import require_auth
 
 summary_bp = Blueprint('summary', __name__)
 
 @summary_bp.route('/summary', methods=['GET'])
+@require_auth
 def get_summary():
     conn = get_connection()
     cursor = conn.cursor()
