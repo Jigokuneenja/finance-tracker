@@ -1,7 +1,9 @@
 import React from "react";
 
 function Dashboard({ summary }) {
-	if (!summary) return <p>Loading summary...</p>;
+	if (!summary || !summary.total_income) {
+		return <p>Loading summary...</p>;
+	}
 
 	return (
 		<div style={{ display: "flex", gap: "16px", merginBottom: "24px" }}>

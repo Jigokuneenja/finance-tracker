@@ -1,6 +1,10 @@
 import React from "react";
 
 function TransactionList({ transactions }) {
+	if (!transactions || !Array.isArray(transactions)) {
+		return <p>Loading transactions...</p>;
+	}
+
 	if (transactions.length === 0) {
 		return <p>No transactions yet. Add one above</p>;
 	}

@@ -4,12 +4,41 @@ import TransactionList from "./components/TransactionList";
 import Dashboard from "./components/Dashboard";
 import SpendingChart from "./components/SpendingChart";
 import FilterBar from "./components/FilterBar";
+import LoginPage from "./pages/LoginPage";
 import { getTransactions, getSummary, addTransaction } from "./api";
 
 function App() {
 	const [transactions, setTransactions] = useState([]);
 	const [summary, setSummary] = useState(null);
 	const [selectedCategory, setSelectedCategory] = useState("all");
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	useEffect(() => {
+		const token = sessionStorage.getItem("token");
+		if (token) {
+			setIsLoggedIn(true);
+			fetchTransactions("all");
+			fetchSummary();
+		}
+	}, []);
+
+	const handleLogin = (token) => {
+		console.log(token);
+		sessionStorage.setItem("token", token);
+		setIsLoggedIn(true);
+	};
+
+	useEffect(() => {
+		if (isLoggedIn) {
+			fetchTransactions("all");
+			fetchSummary();
+		}
+	}, [isLoggedIn]);
+
+	const handleLogout = () => {
+		sessionStorage.removeItem("token");
+		setIsLoggedIn(false);
+	};
 
 	const fetchTransactions = async (category) => {
 		try {
@@ -41,14 +70,24 @@ function App() {
 		fetchTransactions(category);
 	};
 
-	useEffect(() => {
-		fetchTransactions("all");
-		fetchSummary();
-	}, []);
+	if (!isLoggedIn) {
+		return <LoginPage onLogin={handleLogin} />;
+	}
 
 	return (
 		<div style={{ maxWidth: "900px", margin: "0 auto", padding: "24px" }}>
-			<h1>Finance Tracker</h1>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					alignItems: "center",
+				}}
+			>
+				<h1>Finance Tracker</h1>
+				<button onClick={handleLogout} style={{ cursor: "pointer" }}>
+					Log out
+				</button>
+			</div>
 			<Dashboard summary={summary} />
 			<SpendingChart summary={summary} />
 			<TransactionForm onTransactionAdded={handleTransactionAdded} />
